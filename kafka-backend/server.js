@@ -4,8 +4,6 @@ var User = require('./services/userService');
 var Order = require('./services/orderService');
 var Rest = require('./services/restaurantService');
 const mongoose = require('mongoose');
-//mongodb+srv://root:<password>@grubhubparent-cy2ev.mongodb.net/test?retryWrites=true&w=majority
-//mongodb://localhost:27017/grubhub1
 mongoose.connect('mongodb+srv://root:root@grubhubparent-cy2ev.mongodb.net/test?retryWrites=true&w=majority', function(err,res){
     if(err){
         console.log(err);

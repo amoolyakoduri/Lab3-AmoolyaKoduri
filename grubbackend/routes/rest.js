@@ -6,26 +6,23 @@ var jwt = require('jsonwebtoken');
 require('./../config/passport')(passport);
 const secret_key = "Passphrase for encryption should be 45-50 char long";
 var requireAuth = passport.authenticate('jwt', { session: false });
-var kafka = require('./../kafka/client');
-
+var restService = require('./../services/restaurantService');
+var orderService = require('./../services/orderService');
 
 routes.post('/addSection', requireAuth, (req, res) => {
     var token = req.headers.authorization.substr(7);
     var payload = jwt.verify(token, secret_key);
     var ownerEmail = payload.email;
-    var body = {
-        msg: "AddSection",
-        payload: {
+    var payload = {
             ownerEmail: ownerEmail,
             section: req.body.section,
         }
-    }
-    kafka.make_request('GRest', body, function (err, results) {
-        if (err) {
-            res.status(500).json({ success: false, message: err.message, payload: null });
-        } else {
-            res.status(200).json({ success: true, message: "Section added!", payload: null });
-        }
+    restService.addSection(payload)
+    .then( results => {
+        res.status(200).json({ success: true, message: "Section added!", payload: null });
+    })
+    .catch( err => {
+        res.status(500).json({ success: false, message: err.message, payload: null });
     })
 })
 
@@ -34,22 +31,19 @@ routes.post('/deleteSection', requireAuth, (req, res) => {
     var token = req.headers.authorization.substr(7);
     var payload = jwt.verify(token, secret_key);
     var ownerEmail = payload.email;
-    var body = {
-        msg: "DeleteSection",
-        payload: {
+    var payload = {
             ownerEmail: ownerEmail,
             section: req.body.section,
         }
-    }
-    if (body.payload.section == undefined) {
+    if (payload.section == undefined) {
         res.status(500).json({ success: false, message: "Section missing", payload: null });
     } else {
-        kafka.make_request('GRest', body, function (err, results) {
-            if (err) {
-                res.status(500).json({ success: false, message: err.message, payload: null });
-            } else {
-                res.status(200).json({ success: true, message: "Section deleted!", payload: null });
-            }
+        restService.deleteSection(payload)
+        .then( results => {
+            res.status(200).json({ success: true, message: "Section deleted!", payload: null });
+        })
+        .catch( err =>{
+            res.status(500).json({ success: false, message: err.message, payload: null });
         })
     }
 })
@@ -60,9 +54,7 @@ routes.post('/addItem', upload.single('pic'), (req, res) => {
     var token = req.headers.authorization.substr(7);
     var payload = jwt.verify(token, secret_key);
     var ownerEmail = payload.email;
-    var body = {
-        msg: "AddItem",
-        payload: {
+    var payload = {
             ownerEmail: ownerEmail,
             section: req.body.section,
             price: req.body.price,
@@ -70,16 +62,15 @@ routes.post('/addItem', upload.single('pic'), (req, res) => {
             name: req.body.name,
             pic: req.file.path
         }
-    }
-    if (body.payload.section == undefined) {
+    if (payload.section == undefined) {
         res.status(500).json({ success: false, message: "Section missing", payload: null });
     } else {
-        kafka.make_request('GRest', body, function (err, results) {
-            if (err) {
-                res.status(500).json({ success: false, message: err.message, payload: null });
-            } else {
-                res.status(200).json({ success: true, message: "Item added!", payload: null });
-            }
+        restService.addItem(payload)
+        .then( results => {
+            res.status(200).json({ success: true, message: "Item added!", payload: null });
+        })
+        .catch( err => {
+            res.status(500).json({ success: false, message: err.message, payload: null });
         })
     }
 })
@@ -90,23 +81,20 @@ routes.post('/deleteItem', requireAuth, (req, res) => {
     var token = req.headers.authorization.substr(7);
     var payload = jwt.verify(token, secret_key);
     var ownerEmail = payload.email;
-    var body = {
-        msg: "DeleteItem",
-        payload: {
+    var payload = {
             ownerEmail: ownerEmail,
             section: req.body.section,
             itemName: req.body.name
         }
-    }
-    if (body.payload.section === undefined || body.payload.itemName == undefined) {
+    if (payload.section === undefined || payload.itemName == undefined) {
         res.status(500).json({ success: false, message: "Section or name missing", payload: null });
     } else {
-        kafka.make_request('GRest', body, function (err, results) {
-            if (err) {
-                res.status(500).json({ success: false, message: err.message, payload: null });
-            } else {
-                res.status(200).json({ success: true, message: "Item deleted!", payload: null });
-            }
+        restService.deleteItem(payload)
+        .then( results => {
+            res.status(200).json({ success: true, message: "Item deleted!", payload: null });
+        })
+        .catch( err => {
+            res.status(500).json({ success: false, message: err.message, payload: null });
         })
     }
 })
@@ -114,24 +102,21 @@ routes.post('/deleteItem', requireAuth, (req, res) => {
 
 
 routes.get('/getOrders/:restName', requireAuth, (req, res) => {
-    var body = {
-        msg: "GetOrdersByRestName",
-        payload: {
+    var payload  = {
             restName: req.params.restName
         }
-    }
-    if (body.payload.restName == undefined) {
+    if (payload.restName == undefined) {
         res.status(400).json({ success: false, message: "Rest Name undefined", payload: null });
     } else {
-        kafka.make_request('GOrders', body, function (err, results) {
-            if (err) {
-                res.status(500).json({ success: false, message: err.message, payload: null });
-            } else {
-                if (results.length != 0)
-                    res.status(200).json({ success: true, message: "Orders fetched", payload: results });
-                else
-                    res.status(200).json({ success: true, message: "No orders", payload: null })
-            }
+        orderService.getOrdersByRestName(payload)
+        .then ( results => {
+            if (results.length != 0)
+            res.status(200).json({ success: true, message: "Orders fetched", payload: results });
+            else
+            res.status(200).json({ success: true, message: "No orders", payload: null })
+        })
+        .catch( err => {
+            res.status(500).json({ success: false, message: err.message, payload: null });
         })
     }
 })
@@ -139,24 +124,21 @@ routes.get('/getOrders/:restName', requireAuth, (req, res) => {
 
 
 routes.get('/getPastOrders/:restName', requireAuth, (req, res) => {
-    var body = {
-        msg: "GetPastOrdersByRestName",
-        payload: {
+    var payload = {
             restName: req.params.restName
         }
-    }
-    if (body.payload.restName == undefined) {
+    if (payload.restName == undefined) {
         res.status(400).json({ success: false, message: "Rest Name undefined", payload: null });
     } else {
-        kafka.make_request('GOrders', body, function (err, results) {
-            if (err) {
-                res.status(500).json({ success: false, message: err.message, payload: null });
-            } else {
-                if (results.length != 0)
-                    res.status(200).json({ success: true, message: "Orders fetched", payload: results });
-                else
-                    res.status(200).json({ success: true, message: "No orders", payload: null })
-            }
+        orderService.getPastOrdersByRestName(payload)
+        .then ( results => {
+            if (results.length != 0)
+            res.status(200).json({ success: true, message: "Orders fetched", payload: results });
+            else
+            res.status(200).json({ success: true, message: "No orders", payload: null })
+        })
+        .catch( err => {
+            res.status(500).json({ success: false, message: err.message, payload: null });
         })
     }
 })
@@ -164,23 +146,19 @@ routes.get('/getPastOrders/:restName', requireAuth, (req, res) => {
 
 
 routes.post('/updateOrder', requireAuth, (req, res) => {
-    var body = {
-        msg: "UpdateOrder",
-        payload: {
+    var payload = {
             orderId: req.body.orderId,
             status: req.body.status
         }
-    }
-    if (body.payload.orderId == undefined || body.payload.status == undefined) {
+    if (payload.orderId == undefined || payload.status == undefined) {
         res.status(500).json({ success: false, message: "Status or order id undefined", payload: null });
     } else {
-        kafka.make_request('GOrders', body, function (err, results) {
-            if (err) {
-                res.status(500).json({ success: false, message: err.message, payload: null });
-            } else {
-                console.log(results);
-                res.status(200).json({ status: true, message: "Updated status", payload: null });
-            }
+        orderService.updateOrderStatus(payload)
+        .then( results => {
+            res.status(200).json({ status: true, message: "Updated status", payload: null });
+        })
+        .catch ( err => {
+            res.status(500).json({ success: false, message: err.message, payload: null });
         })
     }
 })
@@ -188,40 +166,34 @@ routes.post('/updateOrder', requireAuth, (req, res) => {
 
 
 routes.get('/getRestDetails/:ownerEmail', requireAuth, (req, res) => {
-    var body = {
-        msg: "GetRestDetailsByOwnerEmail",
-        payload: {
+    var payload = {
             ownerEmail: req.params.ownerEmail
         }
-    }
-    kafka.make_request('GRest', body, function (err, results) {
-        if (err) {
-            res.status(400).json({ success: false, message: err.message, payload: null });
-        } else {
-            res.status(200).json({ success: true, message: "Fetching Rest Details", payload: results });
-        }
+    restService.getRestDetailsByOwnerEmail(payload)
+    .then( results => {
+        res.status(200).json({ success: true, message: "Fetching Rest Details", payload: results });
+    })
+    .catch( err => {
+        res.status(400).json({ success: false, message: err.message, payload: null });
     })
 });
 
 
 
 routes.post('/getOrdersByStatus', requireAuth, (req, res) => {
-    var body = {
-        msg: "GetOrdersByStatus",
-        payload: {
+    var payload = {
             restName: req.body.restName,
             status: req.body.status
         }
-    }
-    if (body.payload.status == undefined || body.payload.restName == undefined) {
+    if (payload.status == undefined || payload.restName == undefined) {
         res.status(500).json({ success: false, message: "Status or rest name undefined", payload: null });
     } else {
-        kafka.make_request('GOrders', body, function (err, results) {
-            if (err) {
-                res.status(500).json({ success: false, message: err.message, payload: null });
-            } else {
-                res.status(200).json({ success: true, message: "Fetching orders", payload: { orders: results } });
-            }
+        orderService.getOrdersByStatus(payload)
+        .then( results => {
+            res.status(200).json({ success: true, message: "Fetching orders", payload: { orders: results } });
+        })
+        .catch( err => {
+            res.status(500).json({ success: false, message: err.message, payload: null });
         })
     }
 })
@@ -240,19 +212,15 @@ routes.post('/updateRestDetails', requireAuth, (req, res) => {
         address: req.body.restDetails.address
     }
     var body = {
-        msg: "UpdateRestDetails",
-        payload: {
             restDetails: restDetails
         }
-    }
-    kafka.make_request('GRest', body, function (err, results) {
-        if (err) {
-            res.status(400).json({ success: false, message: err.message, payload: null })
-        } else {
-            res.status(200).json({ success: true, message: "Updated rest details", payload: results });
-        }
+    restService.updateDetails(body)
+    .then( results => {
+        res.status(200).json({ success: true, message: "Updated rest details", payload: results });
+    })
+    .catch( err => {
+        res.status(400).json({ success: false, message: err.message, payload: null })
     })
 })
-
 
 module.exports.routes = routes;

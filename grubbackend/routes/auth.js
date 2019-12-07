@@ -5,7 +5,7 @@ var passport = require('passport');
 var jwt = require('jsonwebtoken');
 require('./../config/passport')(passport);
 const secret_key = "Passphrase for encryption should be 45-50 char long";
-var kafka = require('./../kafka/client');
+var authService = require('./../services/authenticationService');
 
 
 routes.get('/logout', (req, res) => {
@@ -14,30 +14,25 @@ routes.get('/logout', (req, res) => {
 
 
 routes.post('/login', (req, res) => {
-    var body = {
-        msg: "Login",
-        payload: {
+    var payload = {
             email: req.body.emailId,
             password: req.body.password
         }
-    }
-    kafka.make_request('GAuth', body, function (err, results) {
-        console.log(" res is ", results);
-        if (err) {
-            console.log("Couldnt login");
-            res.status(401).json({ success: false, message: err.message, payload: null });
+    authService.authenticate(payload)
+    .then( results => {
+        if (results.length != 0) {
+            var token = jwt.sign({ email: req.body.emailId }, secret_key, {
+                expiresIn: 10080
+            });
+            res.status(200).json({ success: true, message: "Login Successful", payload: results[0].userDetails, token: 'JWT ' + token });
         } else {
-            if (results.length != 0) {
-                var token = jwt.sign({ email: req.body.emailId }, secret_key, {
-                    expiresIn: 10080
-                });
-                res.status(200).json({ success: true, message: "Login Successful", payload: results[0].userDetails, token: 'JWT ' + token });
-            } else {
-                res.status(401).json({ success: false, message: "Invalid Credentials", payload: null });
-            }
+            res.status(401).json({ success: false, message: "Invalid Credentials", payload: null });
         }
-
-    });
+    })
+    .catch( err => {
+        console.log("Couldnt login");
+        res.status(401).json({ success: false, message: err.message, payload: null });
+    })
 })
 
 
@@ -52,29 +47,23 @@ routes.post('/signUp', upload.single('displayPic'), (req, res) => {
         userType: req.body.userType,
         emailId: req.body.emailId
     }
-    var body = {
-        msg: "SignUp",
-        payload: {
+    var payload = {
             email: req.body.emailId,
             password: req.body.password,
             userDetails: userDetails
         }
-    }
-    kafka.make_request('GAuth', body, function (err, results) {
-        if (err) {
-            res.status(500).json({ success: false, message: err.message, payload: null });
-        } else {
-            res.status(200).json({ success: true, message: "User successfully created", payload: null });
-        }
+    authService.createUser(payload)
+    .then( results => {
+        res.status(200).json({ success: true, message: "User successfully created", payload: null });
+    })
+    .catch( err => {
+        res.status(500).json({ success: false, message: err.message, payload: null });
     })
 })
 
 
-
 routes.post('/registerRestaurant', upload.single('displayPic'), (req, res) => {
-    var body = {
-        msg: "CreateRestaurant",
-        payload: {
+    var payload = {
             name: req.body.name,
             zip: req.body.zipcode,
             phone: req.body.phone,
@@ -83,13 +72,12 @@ routes.post('/registerRestaurant', upload.single('displayPic'), (req, res) => {
             ownerEmail: req.body.emailId,
             displayPic: req.file.path,
         }
-    }
-    kafka.make_request('GAuth', body, function (err, results) {
-        if (err) {
-            res.status(500).json({ success: false, message: err.message, payload: null })
-        } else {
-            res.status(200).json({ success: true, message: "Restaurant successfully registered!", payload: null });
-        }
+    authService.createRestaurant(payload)
+    .then( results => {
+        res.status(200).json({ success: true, message: "Restaurant successfully registered!", payload: null });
+    })
+    .catch( err => {
+        res.status(500).json({ success: false, message: err.message, payload: null })
     })
 });
 
