@@ -1,8 +1,7 @@
 'use strict';
 var JwtStrategy = require('passport-jwt').Strategy;
 var ExtractJwt = require('passport-jwt').ExtractJwt;
-var kafka = require('./../kafka/client');
-
+var authService = require('./../services/authenticationService');
 
 module.exports = function (passport) {
     var opts = {
@@ -11,21 +10,16 @@ module.exports = function (passport) {
     };
     passport.use(new JwtStrategy(opts, function (jwt_payload, callback) {
         console.log("jwt_payload is ", jwt_payload);
-        var body = {
-            msg: "FindUser",
-            payload: {
+        var payload = {
                 email: jwt_payload.email
             }
-        }
-        kafka.make_request('GAuth', body, function (err, results) {
-            if (results != null) {
-                if (err) {
-                    callback(err, false);
-                } else {
-                    callback(null, results);
-                }
-            }
-
-        });
+        authService.findUser(payload)
+        .then( results => {
+            if (results != null) 
+            callback(null, results);
+        })
+        .catch( err => {
+            callback(err, false);
+        })
     }));
 };
