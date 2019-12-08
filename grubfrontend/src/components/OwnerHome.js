@@ -1,9 +1,5 @@
 import React from 'react';
 import { Table, Button, Collapse, CardBody, Card, FormGroup, Input } from 'reactstrap';
-import { onGetOrdersSuccess, onGetOwnerRestDetailsFailure, 
-    onGetOwnerRestDetailsSuccess, onUpdateOrderFailure, onUpdateOrderSuccess,
-     onGetOrdersFailure, onGetPastOrdersOwnerFailure, onGetPastOrdersOwnerSuccess } from './../actions/actions';
-import { connect } from 'react-redux';
 import isOwner from './isOwner';
 import loginCheck from './LoginCheck';
 import OrderItems from './OrderItems';
@@ -50,9 +46,7 @@ class OwnerHome extends React.Component {
                 return response.json();
             }).then((myJson) => {
                 if (myJson.success == false) {
-                    this.props.getOwnerRestDetailsFailureDispatch();
                 } else {
-                    this.props.getOwnerRestDetailsSuccessDispatch(myJson.payload[0]);
                 }
             }).then(() => {
                 fetch( baseUrl+'/api/rest/getOrders/' + this.props.restDetails.name, {
@@ -63,9 +57,7 @@ class OwnerHome extends React.Component {
                         return response.json();
                     }).then((myJson) => {
                         if (myJson.success == false) {
-                            this.props.getOrdersFailureDispatch();
                         } else {
-                            this.props.getOrdersSuccessDispatch(myJson.payload);
                         }
                     })
             }).then(() => {
@@ -77,9 +69,7 @@ class OwnerHome extends React.Component {
                         return response.json();
                     }).then((myJson) => {
                         if (myJson.success == false) {
-                            this.props.getPastOrdersOwnerFailureDispatch();
                         } else {
-                            this.props.getPastOrdersOwnerSuccessDispatch(myJson.payload);
                         }
                     })
             })
@@ -102,11 +92,8 @@ class OwnerHome extends React.Component {
         }).then((response) => {
             return response.json();
         }).then((myJson) => {
-            if (myJson.success == false)
-                this.props.updateOrderFailureDispatch();
+            if (myJson.success == false){}
             else {
-                var payload = { orderId, status: status }
-                this.props.updateOrderSuccessDispatch(payload);
             }
         }).catch((err) => {
             console.log(err.message)
@@ -204,23 +191,4 @@ class OwnerHome extends React.Component {
     }
 }
 
-const mapDispatchToProps = (dispatch) => {
-    return {
-        getOrdersSuccessDispatch: (payload) => { dispatch(onGetOrdersSuccess(payload)) },
-        getOrdersFailureDispatch: () => { dispatch(onGetOrdersFailure()) },
-        updateOrderSuccessDispatch: (payload) => { dispatch(onUpdateOrderSuccess(payload)) },
-        updateOrderFailureDispatch: () => { dispatch(onUpdateOrderFailure()) },
-        getPastOrdersOwnerFailureDispatch: () => { dispatch(onGetPastOrdersOwnerFailure()) },
-        getPastOrdersOwnerSuccessDispatch: (payload) => { dispatch(onGetPastOrdersOwnerSuccess(payload)) },
-        getOwnerRestDetailsSuccessDispatch: (payload) => { dispatch(onGetOwnerRestDetailsSuccess(payload)) },
-        getOwnerRestDetailsFailureDispatch: () => { dispatch(onGetOwnerRestDetailsFailure()) }
-    }
-}
-
-const mapStateToProps = (state) => {
-    const { orders, pastOrders, emailId } = state.app;
-    const { restDetails } = state;
-    return { restDetails, orders, pastOrders, emailId };
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(loginCheck(isOwner(OwnerHome)));
+export default loginCheck(isOwner(OwnerHome));

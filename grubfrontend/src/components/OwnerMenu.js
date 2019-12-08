@@ -1,8 +1,6 @@
 import React from 'react';
 import { Button, Modal, ModalHeader, ModalBody} from 'reactstrap';
-import { connect } from 'react-redux';
 import Section from './Section';
-import { onAddSectionSuccess, onAddSectionFailure, onDeleteSectionSuccess, onDeleteSectionFailure } from './../actions/actions';
 import isOwner from './isOwner';
 import loginCheck from './LoginCheck';
 import { AvForm, AvField } from 'availity-reactstrap-validation';
@@ -58,11 +56,7 @@ class OwnerMenu extends React.Component {
             return response.json();
         }).then((myJson) => {
             if (myJson.success == false) {
-                this.props.addSectionFailureDispatch();
             } else {
-                let sections = Object.assign([], this.props.sections);
-                sections.push({ name: this.state.sectionName, menu: [] });
-                this.props.addSectionSuccessDispatch(sections);
             }
         })
     }
@@ -86,9 +80,7 @@ class OwnerMenu extends React.Component {
         }).then((myJson) => {
             console.log("created. ", myJson);
             if (myJson.success == false) {
-                this.props.deleteSectionFailureDispatch();
             } else {
-                this.props.deleteSectionSuccessDispatch({ sectionName: this.state.sectionName });
             }
         })
     }
@@ -134,18 +126,5 @@ class OwnerMenu extends React.Component {
     }
 }
 
-const mapStateToProps = (state) => {
-    const sections = state.restDetails && state.restDetails.sections;
-    return { sections };
-}
 
-const mapDispatchToProps = (dispatch) => {
-    return {
-        addSectionSuccessDispatch: (payload) => { dispatch(onAddSectionSuccess(payload)) },
-        addSectionFailureDispatch: () => { dispatch(onAddSectionFailure()) },
-        deleteSectionSuccessDispatch: (payload) => { dispatch(onDeleteSectionSuccess(payload)) },
-        deleteSectionFailureDispatch: () => { dispatch(onDeleteSectionFailure()) }
-    }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(loginCheck(isOwner(OwnerMenu)));
+export default loginCheck(isOwner(OwnerMenu));

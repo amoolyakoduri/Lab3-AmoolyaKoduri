@@ -3,8 +3,6 @@ import {
   Card, CardBody,
   CardTitle, Button, FormGroup
 } from 'reactstrap';
-import { onSignUpSuccess, onSignUpFailure } from './../actions/actions'
-import { connect } from 'react-redux';
 import { AvForm, AvField, AvRadioGroup, AvRadio } from 'availity-reactstrap-validation';
 import { baseUrl } from './../config/urlConfig';
 
@@ -53,7 +51,6 @@ class SignUp extends React.Component {
         console.log("jsonRes is: ", jsonRes);
         if (jsonRes.success == false) {
           console.log("Couldnt signUp");
-          this.props.signUpFailureDispatch();
         } else {
           console.log(" Registered ! ", jsonRes);
           if (this.state.userType === "buyer")
@@ -63,7 +60,6 @@ class SignUp extends React.Component {
               emailId: this.state.emailId,
               userType: this.state.userType
             }
-            this.props.signUpSuccessDispatch(payload);
             this.props.history.push('/signUpOwner');
           }
         }
@@ -138,17 +134,6 @@ class SignUp extends React.Component {
   }
 }
 
-const mapStateToProps = (state) => {
-  const { userType } = state.app;
-  return { userType };
-}
-
-const mapDispatchToProps = (dispatch) => {
-  return {
-    signUpSuccessDispatch: (payload) => { dispatch(onSignUpSuccess(payload)) },
-    signUpFailureDispatch: () => { dispatch(onSignUpFailure()) }
-  }
-}
 
 
-export default connect(mapStateToProps, mapDispatchToProps)(SignUp);
+export default SignUp;

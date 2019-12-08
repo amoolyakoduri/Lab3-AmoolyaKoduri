@@ -14,8 +14,6 @@ import {
 } from 'reactstrap';
 import pic from './../grub.png'
 import { Link } from 'react-router-dom';
-import { connect } from 'react-redux'
-import { onLogoutSuccess } from '../actions/actions';
 import ls from 'local-storage';
 import { baseUrl } from './../config/urlConfig';
  
@@ -47,8 +45,8 @@ class CustomNavbar extends React.Component {
     fetch(baseUrl+'/api/auth/logout')
       .then(res => res.json())
       .then(res => {
-        this.props.logoutSuccessDispatch();
         ls.set('isLoggedIn', false);
+        ls.clear();
         window.location.href = '/login'
       })
 
@@ -63,14 +61,15 @@ class CustomNavbar extends React.Component {
   render() {
     console.log("in navbar");
     let nav = null;
-    if (this.props.isLoggedIn)
+    let isLoggedIn = ls.get("isLoggedIn");
+    if (isLoggedIn)
       nav = (<div style={{ display: "flex", flexDirection: "row" }}>
         <NavItem>
           <Link style={{ color: "#606369" }} to={this.props.userType === "buyer" ? "/lets-eat" : "/home"}>Home</Link>
         </NavItem>
         <UncontrolledDropdown nav inNavbar>
           <DropdownToggle nav caret>
-            Hi, {this.props.firstName}!
+            Hi, {ls.get('userDetails').firstName}!
       </DropdownToggle>
           <DropdownMenu right>
             <DropdownItem divider />
@@ -82,9 +81,7 @@ class CustomNavbar extends React.Component {
             </DropdownItem>
           </DropdownMenu>
         </UncontrolledDropdown>
-        <NavItem>
-          <Link style={{ color: "#606369" }} to="/cart">Cart</Link>
-        </NavItem></div>)
+        </div>)
     else
       nav = <div><Button onClick={this.login}>Login</Button> <Button onClick={this.signUp}>SignUp</Button>
       </div>
@@ -108,17 +105,4 @@ class CustomNavbar extends React.Component {
   }
 }
 
-function mapStateToProps(state) {
-  const isLoggedIn = state.app.isLoggedIn;
-  const firstName = state.app.firstName;
-  const userType = state.app.userType;
-  return { isLoggedIn, firstName, userType };
-}
-
-function mapDispatchToProps(dispatch) {
-  return {
-    logoutSuccessDispatch: () => { dispatch(onLogoutSuccess()) }
-  }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(CustomNavbar);
+export default CustomNavbar;

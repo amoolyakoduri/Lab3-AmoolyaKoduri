@@ -1,5 +1,4 @@
 import React from 'react';
-import { connect } from 'react-redux';
 import { isOwner, isLoggedIn } from './../helpers/index';
 import Unauthorized from './Unauthorized';
 
@@ -10,7 +9,7 @@ const isOwnerComponent = (WrappedComponent) => {
             return isLoggedIn() && isOwner(this.props.userType) ? <WrappedComponent {...props} /> : <Unauthorized />
         };
     }
-    return connect(mapStateToProps)(WrappedComponentFromBuyer);
+    return WrappedComponentFromBuyer;
 }
 
 const mapStateToProps = (state) => {

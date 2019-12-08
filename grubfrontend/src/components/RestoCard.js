@@ -3,10 +3,8 @@ import {
   Card, CardText, CardBody, CardImg,
   CardTitle, CardSubtitle, Button
 } from 'reactstrap';
-import { onCurrentRestDetailsSuccess } from './../actions/actions';
-import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
-
+import ls from 'local-storage';
 
 class RestoCard extends React.Component {
 
@@ -15,9 +13,9 @@ class RestoCard extends React.Component {
     this.placeOrder = this.placeOrder.bind(this);
   }
 
-  placeOrder(event) {
+  placeOrder(details,event) {
     event.preventDefault();
-    this.props.currentRestDetailsSuccessDispatch(this.props.details);
+    ls.set("currentRest",details);
     this.props.history.push("/placeOrder");
   }
 
@@ -29,16 +27,10 @@ class RestoCard extends React.Component {
         <CardTitle>{details.name}</CardTitle>
         <CardSubtitle>{details.cuisine}</CardSubtitle>
         <CardText>{details.address}</CardText>
-        <Button onClick={this.placeOrder}>Order!</Button>
+        <Button onClick={(event) => this.placeOrder(details,event)}>Order!</Button>
       </CardBody>
     </Card>
   }
 }
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-    currentRestDetailsSuccessDispatch: (payload) => { dispatch(onCurrentRestDetailsSuccess(payload)) }
-  }
-}
-
-export default withRouter(connect(null, mapDispatchToProps)(RestoCard));
+export default withRouter(RestoCard);

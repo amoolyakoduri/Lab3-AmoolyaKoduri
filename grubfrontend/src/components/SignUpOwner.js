@@ -3,8 +3,6 @@ import {
   Card, CardBody,
   CardTitle, Button,  FormGroup
 } from 'reactstrap';
-import { connect } from 'react-redux';
-import { onRestRegisterationFailure, onRestRegisterationSuccess } from './../actions/actions'
 import { AvForm, AvField } from 'availity-reactstrap-validation';
 import ls from 'local-storage';
 import { baseUrl } from './../config/urlConfig';
@@ -47,7 +45,6 @@ class SignUpOwner extends React.Component {
         console.log("jsonRes is: ", jsonRes);
         if (jsonRes.success == false) {
           console.log("Couldnt register");
-          this.props.restRegisterFailureDispatch();
         } else {
           console.log(" Registered ! ", jsonRes);
         }
@@ -104,16 +101,5 @@ class SignUpOwner extends React.Component {
   }
 }
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-    restRegisterSuccessDispatch: (payload) => { dispatch(onRestRegisterationSuccess(payload)) },
-    restRegisterFailureDispatch: () => { dispatch(onRestRegisterationFailure()) }
-  }
-}
 
-const mapStateToProps = (state) => {
-  const { emailId } = state.app;
-  return { emailId }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(SignUpOwner);
+export default SignUpOwner;

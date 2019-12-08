@@ -4,13 +4,9 @@ import {
   CardTitle, Button,
 } from 'reactstrap';
 import BuyerHome from './BuyerHome';
-import { connect } from 'react-redux'
 import { AvForm, AvField } from 'availity-reactstrap-validation';
 import ls from 'local-storage';
 import {baseUrl} from  './../config/urlConfig';
-
-
-import { onOwnerLoginSuccess, onBuyerLoginSuccess, onLoginFailure } from '../actions/actions';
 
 
 var md5 = require('md5');
@@ -52,18 +48,15 @@ class Login extends React.Component {
           this.setState({
             error: jsonRes.message
           })
-          this.props.loginFailureDispatch();
         } else {
           console.log("logged in ! ", jsonRes);
           ls.set('jwtToken', jsonRes.token);
           ls.set('isLoggedIn', true);
-          ls.set('userType', jsonRes.payload.userType);
+          ls.set('userDetails', jsonRes.payload);
           if (jsonRes.payload.userType === "owner") {
-            this.props.ownerLoginSuccessDispatch(jsonRes);
             this.props.history.push("/home");
           }
           else {
-            this.props.buyerLoginSuccessDispatch(jsonRes);
             this.props.history.push("/lets-eat");
           }
         }
@@ -101,17 +94,5 @@ class Login extends React.Component {
 
 }
 
-const mapStateToProps = (state) => {
-  const isLoggedIn = state.app.isLoggedIn;
-  return { isLoggedIn };
-}
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-    ownerLoginSuccessDispatch: (payload) => { dispatch(onOwnerLoginSuccess(payload)) },
-    buyerLoginSuccessDispatch: (payload) => { dispatch(onBuyerLoginSuccess(payload)) },
-    loginFailureDispatch: () => { dispatch(onLoginFailure()) }
-  }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(Login);
+export default Login;

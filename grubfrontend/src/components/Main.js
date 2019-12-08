@@ -10,18 +10,12 @@ import SignUpOwner from './SignUpOwner';
 import SignUp from './SignUp';
 import OwnerHome from './OwnerHome';
 import OwnerMenu from './OwnerMenu';
-import PlaceOrder from './PlaceOrder';
-import Checkout from './Checkout';
-import { connect } from 'react-redux';
 import DraggableOrders from './DraggableOrders';
-import { onOwnerLoginSuccess} from '../actions/actions';
 import { isLoggedIn } from '../helpers';
 import { DndProvider } from 'react-dnd'
-import Chat from './Chat';
 import HTML5Backend from 'react-dnd-html5-backend'
 import { baseUrl } from './../config/urlConfig';
-
-import Cart from './Cart';
+import PlaceOrder from './PlaceOrder';
 
 class Main extends React.Component {
 
@@ -30,7 +24,6 @@ class Main extends React.Component {
             fetch(baseUrl+'/api/getUserDetailsFromSession')
                 .then(res => res.json())
                 .then(res => {
-                    this.props.onOwnerLoginSuccess(res);
                 })
                 .catch(e => { })
         }
@@ -50,10 +43,7 @@ class Main extends React.Component {
                     <Route path="/profile" component={Profile} />
                     <Route path="/home" component={OwnerHome} />
                     <Route path="/menu" component={OwnerMenu} />
-                    <Route path='/placeOrder' component={PlaceOrder} />
-                    <Route path="/checkout" component={Checkout} />
-                    <Route path="/cart" component={Cart} />
-                    <Route path="/chat" component={Chat} />
+                    <Route path="/placeOrder" component={PlaceOrder}/>
                     <Route path="/upcomingOrders" render={() => <DndProvider backend={HTML5Backend}>
                         <DraggableOrders />
                     </DndProvider>} />
@@ -63,9 +53,4 @@ class Main extends React.Component {
     }
 }
 
-
-const mapDispatchToProps = (dispatch) => ({
-    onOwnerLoginSuccess: (payload) => dispatch(onOwnerLoginSuccess(payload))
-})
-
-export default connect(null, mapDispatchToProps)(Main);
+export default Main;

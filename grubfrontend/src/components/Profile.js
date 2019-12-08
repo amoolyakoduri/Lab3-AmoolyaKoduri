@@ -1,5 +1,4 @@
 import React from 'react';
-import { connect } from 'react-redux'
 import Details from './Details';
 import RestaurantDetails from './RestaurantDetails';
 import loginCheck from './LoginCheck';
@@ -24,10 +23,5 @@ class Profile extends React.Component {
     }
 }
 
-const mapStateToProps = (state) => {
-    const { userType, isLoggedIn, displayPic } = state.app;
-    return { userType, isLoggedIn, displayPic };
-}
 
-
-export default connect(mapStateToProps)(loginCheck(Profile));
+export default loginCheck(Profile);

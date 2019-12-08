@@ -4,8 +4,6 @@ import {
   CardTitle, CardSubtitle, Button
 } from 'reactstrap';
 import './../css/Order.css';
-import { onGetRestDetailsSuccess, onGetRestDetailsFailure, onGetOrderItemsFailure, onGetOrderItemsSuccess, onCurrentOrderSuccess } from './../actions/actions';
-import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import '../css/OrderCard.css'
 import ls from 'local-storage';
@@ -18,7 +16,6 @@ class OrderCard extends React.Component {
   }
 
   goToChat = (details) => {
-    this.props.getCurrentOrderSuccessDispatch(details);
     this.props.history.push({
       pathname: '/chat/',
     })
@@ -33,12 +30,9 @@ class OrderCard extends React.Component {
       .then((response) => {
         return response.json();
       }).then((myJson) => {
-        if (myJson.success == false)
-          this.props.getRestDetailsFailureDispatch();
+        if (myJson.success == false){}
         else 
-          this.props.getRestDetailsSuccessDispatch(myJson.payload);
-          this.props.getOrderItemsSuccessDispatch(this.props.details.order_items)
-
+{}
       })
     this.props.history.push("/cart");
   }
@@ -60,15 +54,6 @@ class OrderCard extends React.Component {
   }
 }
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-    getRestDetailsSuccessDispatch: (payload) => { dispatch(onGetRestDetailsSuccess(payload)) },
-    getRestDetailsFailureDispatch: () => { dispatch(onGetRestDetailsFailure()) },
-    getOrderItemsSuccessDispatch: (payload) => { dispatch(onGetOrderItemsSuccess(payload)) },
-    getOrderItemsFailureDispatch: () => { dispatch(onGetOrderItemsFailure()) },
-    getCurrentOrderSuccessDispatch: (payload) => { dispatch(onCurrentOrderSuccess(payload))}
-  }
-}
 
 
-export default connect(null, mapDispatchToProps)(withRouter(OrderCard));
+export default withRouter(OrderCard);
