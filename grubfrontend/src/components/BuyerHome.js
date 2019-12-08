@@ -16,6 +16,8 @@ import './../css/pagination.css';
 import { DndProvider } from 'react-dnd'
 import HTML5Backend from 'react-dnd-html5-backend'
 import {baseUrl} from './../config/urlConfig';
+import { graphql, Query } from 'react-apollo';
+import { getUserDetails} from './../queries/queries';
 
 
 class BuyerHome extends React.Component {

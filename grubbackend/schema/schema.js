@@ -63,7 +63,7 @@ const RestDetailsType = new GraphQLObjectType({
 const RootQuery = new GraphQLObjectType({
     name: 'RootQueryType',
     fields: {
-        UserDetails: {
+        userDetails: {
             type: UserDetailsType,
             args: { emailId: { type: GraphQLString } },
             resolve(parent, args){
@@ -78,7 +78,7 @@ const RootQuery = new GraphQLObjectType({
                 })
             }
         },
-        RestDetails: {
+        restDetails: {
             type: RestDetailsType,
             args: { ownerEmail: { type: new GraphQLNonNull(GraphQLString) } },
             resolve(parent, args){
