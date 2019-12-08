@@ -2,7 +2,7 @@ import { gql } from 'apollo-boost';
 
 const getUserDetails = gql`
 {
-        UserDetails {
+        userDetails {
             firstName
             lastName
             address
@@ -15,7 +15,7 @@ const getUserDetails = gql`
 
 const getRestDetails = gql`
 {
-        RestDetails (emailId : $emailId) {
+        restDetails (emailId : $emailId) {
             name
             zip
             phone

@@ -5,6 +5,9 @@ import {
 } from 'reactstrap';
 import { AvForm, AvField, AvRadioGroup, AvRadio } from 'availity-reactstrap-validation';
 import { baseUrl } from './../config/urlConfig';
+import { graphql } from 'react-apollo';
+import {flowRight as compose} from 'lodash';
+import { signUpMutation} from './../mutations/mutations'
 
 var md5 = require('md5');
 
@@ -19,7 +22,6 @@ class SignUp extends React.Component {
       firstName: null,
       lastName: null,
       userType: null,
-      displayPic: null,
       address: null,
       phone: null
     }
@@ -27,6 +29,24 @@ class SignUp extends React.Component {
     this.changeHandler = this.changeHandler.bind(this);
     this.changeRadioHandler = this.changeRadioHandler.bind(this);
   }
+
+  submitForm(e){
+    e.preventDefault()
+    console.log(this.state);
+    this.props.signUpMutation({
+        variables: {
+          emailId: this.state.emailId,
+          password: this.state.password,
+          firstName: this.state.firstName,
+          lastName: this.state.lastName,
+          userType: this.state.userType,
+          address: this.state.address,
+          phone: this.state.phone,
+        },
+        //refetchQueries: [{ query: getBooksQuery }]
+    });
+
+}
 
   signUp(e) {
     e.preventDefault();
@@ -36,7 +56,6 @@ class SignUp extends React.Component {
     data.append('firstName', this.state.firstName);
     data.append('lastName', this.state.lastName);
     data.append('userType', this.state.userType);
-    data.append('displayPic', this.state.displayPic);
     data.append('address', this.state.address);
     data.append('phone', this.state.phone);
 
@@ -85,11 +104,6 @@ class SignUp extends React.Component {
     this.setState({ userType: value });
   }
 
-  fileHandler = (event) => {
-    this.setState({ displayPic: event.target.files[0] });
-
-  }
-
 
   handlePasswordChange = (event) => {
     var pword = md5(event.target.value);
@@ -125,7 +139,6 @@ class SignUp extends React.Component {
               <AvRadio label="Buyer" value="buyer" name="userType" id="buyer" onChange={this.changeRadioHandler} />
               <AvRadio label="Owner" value="owner" name="userType" id="owner" onChange={this.changeRadioHandler} />
             </AvRadioGroup>
-            <AvField type='file' id='multi' name="displayPic" label="Upload display picture" onChange={this.fileHandler} accept="image/*" required />
             <Button type="submit" >Submit</Button>
           </AvForm>
         </CardBody>
@@ -135,5 +148,6 @@ class SignUp extends React.Component {
 }
 
 
-
-export default SignUp;
+export default compose(
+  graphql(signUpMutation, { name: "signUpMutation" })
+)(SignUp);

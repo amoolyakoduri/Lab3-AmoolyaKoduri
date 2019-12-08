@@ -16,7 +16,13 @@ import { DndProvider } from 'react-dnd'
 import HTML5Backend from 'react-dnd-html5-backend'
 import { baseUrl } from './../config/urlConfig';
 import PlaceOrder from './PlaceOrder';
+import { graphqlUrl } from './../config/urlConfig';
+import ApolloClient from 'apollo-boost';
+import { ApolloProvider} from 'react-apollo';
 
+const client = new ApolloClient({
+  uri: graphqlUrl
+})
 class Main extends React.Component {
 
     componentDidMount() {
@@ -31,6 +37,7 @@ class Main extends React.Component {
 
     render() {
         return (
+            <ApolloProvider client={client} >
             <div>
                 <Router>
                     <Route path="/" component={CustomNavbar} />
@@ -49,6 +56,7 @@ class Main extends React.Component {
                     </DndProvider>} />
                 </Router>
             </div>
+            </ApolloProvider>
         )
     }
 }

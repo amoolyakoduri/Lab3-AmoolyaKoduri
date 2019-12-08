@@ -4,18 +4,10 @@ import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { graphqlUrl } from './config/urlConfig';
-import ApolloClient from 'apollo-boost';
-import { ApolloProvider} from 'react-apollo';
 
-const client = new ApolloClient({
-  uri: graphqlUrl
-})
 
 ReactDOM.render(
-  <ApolloProvider client={client} >
     <App/>
-  </ApolloProvider>
   , document.getElementById('root'));
 
 // If you want your app to work offline and load faster, you can change

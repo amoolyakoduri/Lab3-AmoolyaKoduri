@@ -9,8 +9,10 @@ import './../css/pagination.css';
 import {baseUrl} from './../config/urlConfig';
 import { graphql, Query } from 'react-apollo';
 import { getUserDetails} from './../queries/queries';
-
-
+import { gql } from 'apollo-boost';
+require('react-dom');
+window.React2 = require('react');
+console.log(window.React1 === window.React2);
 class BuyerHome extends React.Component {
 
     constructor(props) {
@@ -62,6 +64,7 @@ class BuyerHome extends React.Component {
     }
 
     render() {
+        console.log(this.props);
         let paginationElement;
         if (this.state.pageCount > 1) {
             paginationElement = (
@@ -93,4 +96,4 @@ class BuyerHome extends React.Component {
     }
 }
 
-export default loginCheck(isBuyer(BuyerHome));
+export default graphql(getUserDetails)(loginCheck(isBuyer(BuyerHome)));
