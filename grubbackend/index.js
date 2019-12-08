@@ -7,6 +7,8 @@ var routes = require('./routes/index').routes;
 var bodyParser = require('body-parser');
 var passport = require('passport');
 var db_config = require('./config/database');
+const schema = require('./schema/schema');
+const graphqlHTTP = require('express-graphql');
 db_config.connectDB();
 require('./config/passport')(passport);
 http.listen(port, function () {
@@ -27,3 +29,7 @@ app.use(function (req, res, next) {
 app.use(express.static('public'))
 app.use('/uploads', express.static('uploads'));
 app.use('/api', routes);
+app.use("/graphql",graphqlHTTP({
+  schema,
+  graphiql: true
+}));
