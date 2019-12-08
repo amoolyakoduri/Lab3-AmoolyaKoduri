@@ -9,6 +9,7 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import '../css/OrderCard.css'
 import ls from 'local-storage';
+import { baseUrl } from './../config/urlConfig'
 
 
 class OrderCard extends React.Component {
@@ -26,7 +27,7 @@ class OrderCard extends React.Component {
   repeatOrder = (event) => {
     event.preventDefault();
     var jwtToken = ls.get('jwtToken').substring(3);
-    fetch('http://3.133.102.192:3003'+'/api/user/getRestDetailsByRestName/' + this.props.details.restName,{
+    fetch(baseUrl+'/api/user/getRestDetailsByRestName/' + this.props.details.restName,{
       method: 'GET',
       headers: {"Authorization" : `Bearer ${jwtToken}`}})
       .then((response) => {

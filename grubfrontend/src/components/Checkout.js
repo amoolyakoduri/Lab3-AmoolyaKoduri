@@ -7,7 +7,7 @@ import Cart from './Cart';
 import isBuyer from './isBuyer';
 import { AvForm, AvField } from 'availity-reactstrap-validation';
 import ls from 'local-storage';
-
+import { baseUrl } from './../config/urlConfig'
 
 
 
@@ -59,7 +59,7 @@ class Checkout extends React.Component {
         var jwtToken = ls.get('jwtToken').substring(3);
         let dateString = this.getDateString();
         this.props.getDeliveryDetailsSuccessDispatch(this.state.deliveryDetails, dateString);
-        fetch('http://3.133.102.192:3003'+'/api/user/placeOrder', {
+        fetch(baseUrl+'/api/user/placeOrder', {
             headers: {
                 "Authorization": `Bearer${jwtToken}`,
                 'Content-Type': 'application/json'

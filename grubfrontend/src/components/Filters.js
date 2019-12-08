@@ -7,7 +7,7 @@ import { onSearchFailure, onSearchSuccess } from './../actions/actions';
 import isBuyer from './isBuyer';
 import loginCheck from './LoginCheck'
 import ls from 'local-storage';
-
+import { baseUrl } from './../config/urlConfig'
 
 class Filters extends React.Component {
 
@@ -38,7 +38,7 @@ class Filters extends React.Component {
       })
       return null;
     } else {
-      fetch('http://3.133.102.192:3003'+'/api/user/search', {
+      fetch(baseUrl+'/api/user/search', {
         method: 'POST',
         headers: {
           "Authorization": `Bearer${jwtToken}`,

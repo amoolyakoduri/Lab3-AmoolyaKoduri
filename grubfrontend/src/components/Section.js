@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { onAddItemSuccess, onAddItemFailure, onDeleteItemSuccess, onDeleteItemFailure } from './../actions/actions';
 import { AvForm, AvField } from 'availity-reactstrap-validation';
 import ls from 'local-storage';
-
+import { baseUrl } from './../config/urlConfig';
 
 class Section extends React.Component {
   constructor() {
@@ -50,7 +50,7 @@ class Section extends React.Component {
     data.append('desc', this.state.desc);
     data.append('price', this.state.price);
     data.append('pic', this.state.pic);
-    fetch('http://3.133.102.192:3003'+'/api/rest/addItem', {
+    fetch( baseUrl+'/api/rest/addItem', {
       headers: {
         "Authorization": `Bearer${jwtToken}`
       },
@@ -78,7 +78,7 @@ class Section extends React.Component {
     this.setState(prevState => ({
       modal2: !prevState.modal2
     }));
-    fetch('http://3.133.102.192:3003'+'/api/rest/deleteItem', {
+    fetch( baseUrl+'/api/rest/deleteItem', {
       headers: {
         "Authorization": `Bearer${jwtToken}`,
         'Content-Type': 'application/json'

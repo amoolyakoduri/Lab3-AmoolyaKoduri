@@ -7,7 +7,7 @@ import BuyerHome from './BuyerHome';
 import { connect } from 'react-redux'
 import { AvForm, AvField } from 'availity-reactstrap-validation';
 import ls from 'local-storage';
-
+import {baseUrl} from  './../config/urlConfig';
 
 
 import { onOwnerLoginSuccess, onBuyerLoginSuccess, onLoginFailure } from '../actions/actions';
@@ -36,7 +36,7 @@ class Login extends React.Component {
 
   login(event) {
     event.preventDefault();
-    fetch('http://3.133.102.192:3003'+'/api/auth/login', {
+    fetch(baseUrl+'/api/auth/login', {
       headers: {
         'Content-Type': 'application/json'
       },

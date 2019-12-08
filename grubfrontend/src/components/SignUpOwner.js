@@ -7,7 +7,7 @@ import { connect } from 'react-redux';
 import { onRestRegisterationFailure, onRestRegisterationSuccess } from './../actions/actions'
 import { AvForm, AvField } from 'availity-reactstrap-validation';
 import ls from 'local-storage';
-
+import { baseUrl } from './../config/urlConfig';
 
 class SignUpOwner extends React.Component {
   constructor() {
@@ -36,7 +36,7 @@ class SignUpOwner extends React.Component {
     data.append('phone', this.state.phone);
     data.append('displayPic', this.state.displayPic);
     data.append('emailId', this.props.emailId);
-    fetch('http://3.133.102.192:3003'+'/api/auth/registerRestaurant', {
+    fetch(baseUrl+'/api/auth/registerRestaurant', {
       method: 'POST',
       body: data,
     })

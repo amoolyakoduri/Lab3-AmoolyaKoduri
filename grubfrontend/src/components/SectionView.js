@@ -2,6 +2,7 @@ import React from 'react';
 import { onAddToCartSuccess } from './../actions/actions';
 import { connect } from 'react-redux';
 import ItemDetails from './ItemDetails';
+import { baseUrl} from './../config/urlConfig'
 
 class SectionView extends React.Component {
 

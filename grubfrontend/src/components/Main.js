@@ -19,6 +19,7 @@ import { isLoggedIn } from '../helpers';
 import { DndProvider } from 'react-dnd'
 import Chat from './Chat';
 import HTML5Backend from 'react-dnd-html5-backend'
+import { baseUrl } from './../config/urlConfig';
 
 import Cart from './Cart';
 
@@ -26,7 +27,7 @@ class Main extends React.Component {
 
     componentDidMount() {
         if (isLoggedIn()) {
-            fetch('http://3.133.102.192:3003'+'/api/getUserDetailsFromSession')
+            fetch(baseUrl+'/api/getUserDetailsFromSession')
                 .then(res => res.json())
                 .then(res => {
                     this.props.onOwnerLoginSuccess(res);

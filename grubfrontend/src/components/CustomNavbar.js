@@ -17,7 +17,8 @@ import { Link } from 'react-router-dom';
 import { connect } from 'react-redux'
 import { onLogoutSuccess } from '../actions/actions';
 import ls from 'local-storage';
-
+import { baseUrl } from './../config/urlConfig';
+ 
 class CustomNavbar extends React.Component {
 
   constructor() {
@@ -43,7 +44,7 @@ class CustomNavbar extends React.Component {
 
   logout(e) {
     e.preventDefault();
-    fetch('http://3.133.102.192:3003'+'/api/auth/logout')
+    fetch(baseUrl+'/api/auth/logout')
       .then(res => res.json())
       .then(res => {
         this.props.logoutSuccessDispatch();

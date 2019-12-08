@@ -6,6 +6,7 @@ import {
 import { onSignUpSuccess, onSignUpFailure } from './../actions/actions'
 import { connect } from 'react-redux';
 import { AvForm, AvField, AvRadioGroup, AvRadio } from 'availity-reactstrap-validation';
+import { baseUrl } from './../config/urlConfig';
 
 var md5 = require('md5');
 
@@ -41,7 +42,7 @@ class SignUp extends React.Component {
     data.append('address', this.state.address);
     data.append('phone', this.state.phone);
 
-    fetch('http://3.133.102.192:3003'+'/api/auth/signUp', {
+    fetch(baseUrl+'/api/auth/signUp', {
       method: 'POST',
       body: data
     })

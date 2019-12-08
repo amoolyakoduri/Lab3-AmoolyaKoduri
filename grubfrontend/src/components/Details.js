@@ -6,6 +6,7 @@ import { AvForm, AvField } from 'availity-reactstrap-validation';
 import ls from 'local-storage';
 import isBuyer from './isBuyer';
 import loginCheck from './LoginCheck'
+import { baseUrl } from  './../config/urlConfig'
 
 var md5 = require('md5');
 
@@ -33,7 +34,7 @@ class Details extends React.Component {
 
     update() {
         var jwtToken = ls.get('jwtToken').substring(3);
-        fetch('http://3.133.102.192:3003'+'/api/user/updateDetails', {
+        fetch(baseUrl+'/api/user/updateDetails', {
             method: 'POST',
             headers: {
                 "Authorization": `Bearer${jwtToken}`,
@@ -60,7 +61,7 @@ class Details extends React.Component {
 
     updatePassword = (event) => {
         var jwtToken = ls.get('jwtToken').substring(3);
-        fetch('http://3.133.102.192:3003'+'/api/user/updatePassword', {
+        fetch(baseUrl+'/api/user/updatePassword', {
             method: 'POST',
             headers: {
                 "Authorization": `Bearer${jwtToken}`,

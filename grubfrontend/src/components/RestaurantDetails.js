@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { onUpdateRestDetailsSuccess, onUpdateRestDetailsFailure } from './../actions/actions';
 import { AvForm, AvField } from 'availity-reactstrap-validation';
 import ls from 'local-storage';
-
+import { baseUrl } from './../config/urlConfig'
 
 class RestaurantDetails extends React.Component {
 
@@ -21,7 +21,7 @@ class RestaurantDetails extends React.Component {
     update() {
         const updatedRestDetails = Object.assign({}, this.props.restDetails, this.state.restDetails);
         var jwtToken = ls.get('jwtToken').substring(3);
-        fetch('http://3.133.102.192:3003'+'/api/rest/updateRestDetails', {
+        fetch(baseUrl+'/api/rest/updateRestDetails', {
             method: 'POST',
             headers: {
                 "Authorization": `Bearer${jwtToken}`,

@@ -15,7 +15,7 @@ import ReactPaginate from 'react-paginate';
 import './../css/pagination.css';
 import { DndProvider } from 'react-dnd'
 import HTML5Backend from 'react-dnd-html5-backend'
-
+import {baseUrl} from './../config/urlConfig';
 
 
 class BuyerHome extends React.Component {
@@ -45,7 +45,7 @@ class BuyerHome extends React.Component {
 
     componentDidMount() {
         var jwtToken = ls.get('jwtToken').substring(3);
-        fetch('http://3.133.102.192:3003'+'/api/user/pastOrders/' + this.props.emailId, {
+        fetch(baseUrl+'/api/user/pastOrders/' + this.props.emailId, {
             method: 'GET',
             headers: { "Authorization": `Bearer ${jwtToken}` },
         }).then((response) => {
@@ -58,7 +58,7 @@ class BuyerHome extends React.Component {
                 this.props.getPastOrdersSuccessDispatch(myJson.payload);
             }
         })
-        fetch('http://3.133.102.192:3003'+'/api/user/getRestaurants', {
+        fetch(baseUrl+'/api/user/getRestaurants', {
             method: 'GET',
             headers: { "Authorization": `Bearer ${jwtToken}` },
         }).then((response) => {
@@ -71,7 +71,7 @@ class BuyerHome extends React.Component {
             }, () => this.setElementsForCurrentPage());
             this.props.getRestaurantsSuccessDispatch(myJson.payload);
         })
-        fetch('http://3.133.102.192:3003'+'/api/user/upcomingOrders/' + this.props.emailId, {
+        fetch(baseUrl+'/api/user/upcomingOrders/' + this.props.emailId, {
             method: 'GET',
             headers: { "Authorization": `Bearer ${jwtToken}` },
         }).then((response) => {

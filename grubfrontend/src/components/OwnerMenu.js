@@ -7,6 +7,7 @@ import isOwner from './isOwner';
 import loginCheck from './LoginCheck';
 import { AvForm, AvField } from 'availity-reactstrap-validation';
 import ls from 'local-storage';
+import { baseUrl } from './../config/urlConfig';
 
 class OwnerMenu extends React.Component {
     constructor() {
@@ -44,7 +45,7 @@ class OwnerMenu extends React.Component {
         this.setState(prevState => ({
             modal1: !prevState.modal1
         }));
-        fetch('http://3.133.102.192:3003'+'/api/rest/addSection', {
+        fetch(baseUrl+'/api/rest/addSection', {
             headers: {
                 "Authorization": `Bearer${jwtToken}`,
                 "Content-Type": "application/json",
@@ -71,7 +72,7 @@ class OwnerMenu extends React.Component {
         this.setState(prevState => ({
             modal2: !prevState.modal2
         }));
-        fetch('http://3.133.102.192:3003'+'/api/rest/deleteSection', {
+        fetch(baseUrl+'/api/rest/deleteSection', {
             headers: {
                 "Authorization": `Bearer${jwtToken}`,
                 "Content-Type": "application/json"
