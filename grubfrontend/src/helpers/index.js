@@ -5,9 +5,9 @@ export const isLoggedIn = () => {
 }
 
 export const isBuyer = () => {
-    return ls.get('userType') === "buyer";
+    return ls.get('userDetails').userType === "buyer";
 }
 
 export const isOwner = () => {
-    return ls.get('userType') === "owner";
+    return ls.get('userDetails').userType === "owner";
 }

@@ -1,25 +1,18 @@
 import React from 'react';
-import OrdersContainer from './OrdersContainer';
 import JumbotronHome from './JumbotronHome';
 import isBuyer from './isBuyer';
 import RestoCard from './RestoCard';
 import loginCheck from './LoginCheck'
-import { connect } from 'react-redux';
-import {
-    onGetPastOrdersFailure, onGetUpcomingOrdersFailure,
-    onGetUpcomingOrdersSuccess, onGetPastOrdersSuccess, onGetRestaurantsSuccess
-} from './../actions/actions'
 import ls from 'local-storage';
-import DraggableOrders from './DraggableOrders';
 import ReactPaginate from 'react-paginate';
 import './../css/pagination.css';
-import { DndProvider } from 'react-dnd'
-import HTML5Backend from 'react-dnd-html5-backend'
 import {baseUrl} from './../config/urlConfig';
 import { graphql, Query } from 'react-apollo';
 import { getUserDetails} from './../queries/queries';
-
-
+import { gql } from 'apollo-boost';
+require('react-dom');
+window.React2 = require('react');
+console.log(window.React1 === window.React2);
 class BuyerHome extends React.Component {
 
     constructor(props) {
@@ -47,19 +40,6 @@ class BuyerHome extends React.Component {
 
     componentDidMount() {
         var jwtToken = ls.get('jwtToken').substring(3);
-        fetch(baseUrl+'/api/user/pastOrders/' + this.props.emailId, {
-            method: 'GET',
-            headers: { "Authorization": `Bearer ${jwtToken}` },
-        }).then((response) => {
-            return response.json();
-        }).then((myJson) => {
-            if (myJson.success == false) {
-                console.log("Couldnt fetch past orders");
-                this.props.getPastOrdersFailureDispatch();
-            } else {
-                this.props.getPastOrdersSuccessDispatch(myJson.payload);
-            }
-        })
         fetch(baseUrl+'/api/user/getRestaurants', {
             method: 'GET',
             headers: { "Authorization": `Bearer ${jwtToken}` },
@@ -71,20 +51,7 @@ class BuyerHome extends React.Component {
                 data: myJson.payload,
                 pageCount: Math.ceil(myJson.payload.length / this.state.perPage)
             }, () => this.setElementsForCurrentPage());
-            this.props.getRestaurantsSuccessDispatch(myJson.payload);
-        })
-        fetch(baseUrl+'/api/user/upcomingOrders/' + this.props.emailId, {
-            method: 'GET',
-            headers: { "Authorization": `Bearer ${jwtToken}` },
-        }).then((response) => {
-            return response.json();
-        }).then((myJson) => {
-            if (myJson.success == false) {
-                console.log("Couldnt fetch past orders");
-                this.props.getUpcomingOrdersFailureDispatch();
-            } else {
-                this.props.getUpcomingOrdersSuccessDispatch(myJson.payload);
-            }
+            ls.set("restaurants",myJson.payload);
         })
     }
 
@@ -97,6 +64,7 @@ class BuyerHome extends React.Component {
     }
 
     render() {
+        console.log(this.props);
         let paginationElement;
         if (this.state.pageCount > 1) {
             paginationElement = (
@@ -116,21 +84,7 @@ class BuyerHome extends React.Component {
         }
         return <div style={{ textAlign: "center" }}>
             <JumbotronHome />
-            {this.props.upcomingOrders &&
-                <div>
-                    <h4 class="container" >Your Upcoming Orders</h4>
-                    <DndProvider backend={HTML5Backend}>
-                        <DraggableOrders />
-                    </DndProvider>
-                </div>
-            }
-            {this.props.pastOrders &&
-                <div >
-                    <h4 class="container" style={{ textAlign: "center", color: "black" }}>Your Past Orders</h4>
-                    <OrdersContainer orders={this.props.pastOrders} />
-                </div>
-            }
-            {this.props.restaurants &&
+            {this.state.data &&
                 <div style={{ display: "flex", flexDirection: "column" }}>
                     <div>{paginationElement}</div>
                     <div style={{ border: "#d0dcdc", width: "fit-content", textAlign: "center", position: "absolute", left: "40%", display: "flex", flexDirection: "column", justifyContent: "space-around" }}>
@@ -142,20 +96,4 @@ class BuyerHome extends React.Component {
     }
 }
 
-const mapStateToProps = (state) => {
-    const { pastOrders, restaurants, upcomingOrders } = state.app;
-    const emailId = state.app.emailId;
-    return { pastOrders, restaurants, upcomingOrders, emailId };
-}
-
-const mapDispatchToProps = (dispatch) => {
-    return {
-        getPastOrdersSuccessDispatch: (payload) => { dispatch(onGetPastOrdersSuccess(payload)) },
-        getPastOrdersFailureDispatch: () => { dispatch(onGetPastOrdersFailure()) },
-        getRestaurantsSuccessDispatch: (restaurants) => { dispatch(onGetRestaurantsSuccess(restaurants)) },
-        getUpcomingOrdersSuccessDispatch: (payload) => { dispatch(onGetUpcomingOrdersSuccess(payload)) },
-        getUpcomingOrdersFailureDispatch: () => { dispatch(onGetUpcomingOrdersFailure()) },
-    }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(loginCheck(isBuyer(BuyerHome)));
+export default graphql(getUserDetails)(loginCheck(isBuyer(BuyerHome)));

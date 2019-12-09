@@ -1,6 +1,5 @@
 import React from 'react';
 import RestaurantContainer from './RestaurantContainer';
-import { connect } from 'react-redux';
 
 
 class SearchContent extends React.Component {
@@ -18,15 +17,5 @@ class SearchContent extends React.Component {
     }
 }
 
-const mapStateToProps = (state) => {
-    const { searchList, restaurants } = state.app;
-    return { searchList, restaurants };
-}
 
-const mapDispatchToProps = (dispatch) => {
-    return {
-
-    }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(SearchContent);
+export default SearchContent;

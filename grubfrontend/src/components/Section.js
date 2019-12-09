@@ -1,7 +1,5 @@
 import React from 'react';
 import { Button, Modal, Table, ModalHeader, ModalBody, ModalFooter, Input, Label } from 'reactstrap';
-import { connect } from 'react-redux';
-import { onAddItemSuccess, onAddItemFailure, onDeleteItemSuccess, onDeleteItemFailure } from './../actions/actions';
 import { AvForm, AvField } from 'availity-reactstrap-validation';
 import ls from 'local-storage';
 import { baseUrl } from './../config/urlConfig';
@@ -60,7 +58,6 @@ class Section extends React.Component {
       return response.json();
     }).then((myJson) => {
       if (myJson.success == false) {
-        this.props.addItemFailureDispatch();
       } else {
         let item = [{
           name: this.state.name,
@@ -68,7 +65,6 @@ class Section extends React.Component {
           price: this.state.price,
           pic: this.state.pic
         }];
-        this.props.addItemSuccessDispatch(item, this.props.name);
       }
     })
   }
@@ -93,10 +89,8 @@ class Section extends React.Component {
     }).then((myJson) => {
       console.log("deleted item. ", myJson);
       if (myJson.success == false) {
-        this.props.deleteItemFailureDispatch();
         console.log("item not deleted");
       } else {
-        this.props.deleteItemSuccessDispatch({ itemName: this.state.itemName }, this.props.name);
       }
     })
   }
@@ -165,16 +159,5 @@ class Section extends React.Component {
   }
 }
 
-const mapStateToProps = (state, props) => {
-}
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-    addItemSuccessDispatch: (payload, sectionName) => { dispatch(onAddItemSuccess(payload, sectionName)) },
-    addItemFailureDispatch: () => { dispatch(onAddItemFailure()) },
-    deleteItemSuccessDispatch: (payload, sectionName) => { dispatch(onDeleteItemSuccess(payload, sectionName)) },
-    deleteItemFailureDispatch: () => { dispatch(onDeleteItemFailure()) }
-  }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(Section);
+export default Section;

@@ -10,19 +10,19 @@ import SignUpOwner from './SignUpOwner';
 import SignUp from './SignUp';
 import OwnerHome from './OwnerHome';
 import OwnerMenu from './OwnerMenu';
-import PlaceOrder from './PlaceOrder';
-import Checkout from './Checkout';
-import { connect } from 'react-redux';
 import DraggableOrders from './DraggableOrders';
-import { onOwnerLoginSuccess} from '../actions/actions';
 import { isLoggedIn } from '../helpers';
 import { DndProvider } from 'react-dnd'
-import Chat from './Chat';
 import HTML5Backend from 'react-dnd-html5-backend'
 import { baseUrl } from './../config/urlConfig';
+import PlaceOrder from './PlaceOrder';
+import { graphqlUrl } from './../config/urlConfig';
+import ApolloClient from 'apollo-boost';
+import { ApolloProvider} from 'react-apollo';
 
-import Cart from './Cart';
-
+const client = new ApolloClient({
+  uri: graphqlUrl
+})
 class Main extends React.Component {
 
     componentDidMount() {
@@ -30,7 +30,6 @@ class Main extends React.Component {
             fetch(baseUrl+'/api/getUserDetailsFromSession')
                 .then(res => res.json())
                 .then(res => {
-                    this.props.onOwnerLoginSuccess(res);
                 })
                 .catch(e => { })
         }
@@ -38,6 +37,7 @@ class Main extends React.Component {
 
     render() {
         return (
+            <ApolloProvider client={client} >
             <div>
                 <Router>
                     <Route path="/" component={CustomNavbar} />
@@ -50,22 +50,15 @@ class Main extends React.Component {
                     <Route path="/profile" component={Profile} />
                     <Route path="/home" component={OwnerHome} />
                     <Route path="/menu" component={OwnerMenu} />
-                    <Route path='/placeOrder' component={PlaceOrder} />
-                    <Route path="/checkout" component={Checkout} />
-                    <Route path="/cart" component={Cart} />
-                    <Route path="/chat" component={Chat} />
+                    <Route path="/placeOrder" component={PlaceOrder}/>
                     <Route path="/upcomingOrders" render={() => <DndProvider backend={HTML5Backend}>
                         <DraggableOrders />
                     </DndProvider>} />
                 </Router>
             </div>
+            </ApolloProvider>
         )
     }
 }
 
-
-const mapDispatchToProps = (dispatch) => ({
-    onOwnerLoginSuccess: (payload) => dispatch(onOwnerLoginSuccess(payload))
-})
-
-export default connect(null, mapDispatchToProps)(Main);
+export default Main;

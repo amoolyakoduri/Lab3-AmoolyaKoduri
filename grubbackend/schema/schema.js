@@ -3,22 +3,24 @@ const _ = require('lodash');
 var userService = require('../services/userService');
 var restService = require('./../services/restaurantService');
 var authService = require('./../services/authenticationService');
+var passport = require('passport');
+var requireAuth = passport.authenticate('jwt', { session: false });
 
 const {
     GraphQLObjectType,
     GraphQLString,
     GraphQLSchema,
-    GraphQLID,
     GraphQLInt,
     GraphQLList,
+    GraphQLID,
     GraphQLNonNull
 } = graphql;
 
 const SectionType = new GraphQLObjectType({
     name: 'Section',
     fields: ( ) => ({
-        name: {type: new GraphQLNonNull(GraphQLString)},
-        menu: {type : new GraphQLList(MenuType)}
+        name: {type: GraphQLString},
+        menu: {type : new GraphQLList(MenuType)},
     })
 });
 
@@ -33,14 +35,13 @@ const MenuType = new GraphQLObjectType({
         })
     })
 
-const UserDetailsType = new GraphQLObjectType({
-    name: 'UserDetails',
+const UserType = new GraphQLObjectType({
+    name: 'User',
     fields: ( ) => ({
-        firstName: { type: new GraphQLNonNull(GraphQLString) },
+        firstName : { type : GraphQLString},
         lastName: { type: GraphQLString },
         address: { type: GraphQLString },
         phone: { type: GraphQLString },
-        displayPic: { type: GraphQLString },
         userType: { type: new GraphQLNonNull(GraphQLString) },
         emailId : { type : new GraphQLNonNull(GraphQLString) },
     })
@@ -49,48 +50,39 @@ const UserDetailsType = new GraphQLObjectType({
 const RestDetailsType = new GraphQLObjectType({
     name: 'RestDetails',
     fields: ( ) => ({
+        _id : { type : GraphQLID},
         name: {type: new GraphQLNonNull(GraphQLString)},
         zip: {type: GraphQLString},
         phone: {type: GraphQLString},
         cuisine: {type: GraphQLString},
         address: {type: GraphQLString},
         ownerEmail: {type: new GraphQLNonNull(GraphQLString)},
-        displayPic: {type: GraphQLString},
-        sections: {type: new GraphQLList(SectionType)}
+        displayPic : { type : GraphQLString},
+        sections : { type : new GraphQLList(SectionType)}
     })
 })
 
 const RootQuery = new GraphQLObjectType({
     name: 'RootQueryType',
     fields: {
-        userDetails: {
-            type: UserDetailsType,
+        user: {
+            type: UserType,
             args: { emailId: { type: GraphQLString } },
             resolve(parent, args){
                 var payload = {
                     email: args.emailId
                 }
-                userService.getUserDetails(payload)
-                .then( results => {
-                    return results;
-                }).catch( err => {
-                    return err;
-                })
+                return userService.getUserDetails(payload)
             }
         },
         restDetails: {
             type: RestDetailsType,
-            args: { ownerEmail: { type: new GraphQLNonNull(GraphQLString) } },
+            args: { name: { type: new GraphQLNonNull(GraphQLString) } },
             resolve(parent, args){
                 var payload = {
-                    email: parent.emailId
+                    restName: args.name
                 }
-                restService.getRestDetailsByOwnerEmail(payload)
-                .then( results => {
-                    return results;
-                }).catch( err => {
-                    return err;
-                })
+                return restService.getRestDetailsByRestName(payload)
             }
         }
     }
@@ -100,33 +92,34 @@ const Mutation = new GraphQLObjectType({
     name: 'Mutation',
     fields: {
         signUpUser: {
-            type: UserDetailsType,
+            type: UserType,
             args: {
                 firstName: { type: GraphQLString },
                 lastName: { type: GraphQLString },
                 emailId: { type: new GraphQLNonNull(GraphQLString)},
                 password : {  type: GraphQLString },
-                userType : { type : GraphQLString }
+                userType : { type : GraphQLString },
+                phone : {  type : GraphQLString },
+                address : {  type : GraphQLString },
+                displayPic : { type : GraphQLString }
             },
             resolve(parent, args){
                 var userDetails = {
                     firstName: args.firstName,
                     lastName: args.lastName,
                     emailId: args.emailId,
-                    userType : args.userType
+                    userType : args.userType,
+                    address : args.address,
+                    phone : args.phone,
+                    displayPic : args.displayPic
                 }
                 var payload = {
                         email: args.emailId,
                         password: args.password,
-                        userDetails: userDetails
+                        userDetails: userDetails,
                     }
-                authService.createUser(payload)
-                .then( results => {
-                    return results;
-                })
-                .catch( err => {
-                    return err;
-                })
+                return authService.createUser(payload)
+                
             }
         },
         signUpRestaurant: {
@@ -138,27 +131,61 @@ const Mutation = new GraphQLObjectType({
                 cuisine: {type: GraphQLString},
                 address: {type: GraphQLString},
                 ownerEmail: {type: new GraphQLNonNull(GraphQLString)},
-                sections: {type: new GraphQLList(SectionType)}
+                displayPic : { type :  GraphQLString}
             },
             resolve(parent, args){
                 var payload = {
                     name: args.name,
-                    zip: args.zipcode,
+                    zip: args.zip,
                     phone: args.phone,
-                    cuisine: req.args.cuisine,
+                    cuisine: args.cuisine,
                     address: args.address,
-                    ownerEmail: args.emailId,
+                    ownerEmail: args.ownerEmail,
+                    displayPic : args.displayPic
                 }
-                authService.createRestaurant(payload)
-                .then( results => {
-                    return results;
-                })
-                .catch( err => {
-                    return err;
-                })
+                return authService.createRestaurant(payload)
+                
+            }
+        },
+        updateUserDetails: {
+            type: UserType,
+            args: {
+                firstName: { type: GraphQLString },
+                lastName: { type: GraphQLString },
+                emailId: { type: new GraphQLNonNull(GraphQLString)},
+                phone : {  type : GraphQLString },
+                address : {  type : GraphQLString },
+            },
+            resolve(parent, args){
+                userService.updateDetails(args)
+                return args   
+            }
+        },
+        addSection : {
+            type : SectionType,
+            args : {
+                ownerEmail : { type : GraphQLString},
+                section : { type : GraphQLString}
+            },
+            resolve(parent,args){
+                restService.addSection(args)
+                return args;
+            }
+        },
+        addItem : {
+            type : MenuType,
+            args : {
+                ownerEmail :  { type : GraphQLString },
+                name : { type : GraphQLString },
+                desc : { type : GraphQLString},
+                price : { type : GraphQLID},
+                section : { type : GraphQLString}
+            },
+            resolve(parent,args){
+                restService.addItem(args)
+                return args;
             }
         }
-                
     }
 })
 

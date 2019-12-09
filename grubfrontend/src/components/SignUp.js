@@ -3,10 +3,11 @@ import {
   Card, CardBody,
   CardTitle, Button, FormGroup
 } from 'reactstrap';
-import { onSignUpSuccess, onSignUpFailure } from './../actions/actions'
-import { connect } from 'react-redux';
 import { AvForm, AvField, AvRadioGroup, AvRadio } from 'availity-reactstrap-validation';
 import { baseUrl } from './../config/urlConfig';
+import { graphql } from 'react-apollo';
+import {flowRight as compose} from 'lodash';
+import { signUpMutation} from './../mutations/mutations'
 
 var md5 = require('md5');
 
@@ -21,7 +22,6 @@ class SignUp extends React.Component {
       firstName: null,
       lastName: null,
       userType: null,
-      displayPic: null,
       address: null,
       phone: null
     }
@@ -29,6 +29,24 @@ class SignUp extends React.Component {
     this.changeHandler = this.changeHandler.bind(this);
     this.changeRadioHandler = this.changeRadioHandler.bind(this);
   }
+
+  submitForm(e){
+    e.preventDefault()
+    console.log(this.state);
+    this.props.signUpMutation({
+        variables: {
+          emailId: this.state.emailId,
+          password: this.state.password,
+          firstName: this.state.firstName,
+          lastName: this.state.lastName,
+          userType: this.state.userType,
+          address: this.state.address,
+          phone: this.state.phone,
+        },
+        //refetchQueries: [{ query: getBooksQuery }]
+    });
+
+}
 
   signUp(e) {
     e.preventDefault();
@@ -38,7 +56,6 @@ class SignUp extends React.Component {
     data.append('firstName', this.state.firstName);
     data.append('lastName', this.state.lastName);
     data.append('userType', this.state.userType);
-    data.append('displayPic', this.state.displayPic);
     data.append('address', this.state.address);
     data.append('phone', this.state.phone);
 
@@ -53,7 +70,6 @@ class SignUp extends React.Component {
         console.log("jsonRes is: ", jsonRes);
         if (jsonRes.success == false) {
           console.log("Couldnt signUp");
-          this.props.signUpFailureDispatch();
         } else {
           console.log(" Registered ! ", jsonRes);
           if (this.state.userType === "buyer")
@@ -63,7 +79,6 @@ class SignUp extends React.Component {
               emailId: this.state.emailId,
               userType: this.state.userType
             }
-            this.props.signUpSuccessDispatch(payload);
             this.props.history.push('/signUpOwner');
           }
         }
@@ -87,11 +102,6 @@ class SignUp extends React.Component {
     let value = event.target.value;
     console.log("value is ", value);
     this.setState({ userType: value });
-  }
-
-  fileHandler = (event) => {
-    this.setState({ displayPic: event.target.files[0] });
-
   }
 
 
@@ -129,7 +139,6 @@ class SignUp extends React.Component {
               <AvRadio label="Buyer" value="buyer" name="userType" id="buyer" onChange={this.changeRadioHandler} />
               <AvRadio label="Owner" value="owner" name="userType" id="owner" onChange={this.changeRadioHandler} />
             </AvRadioGroup>
-            <AvField type='file' id='multi' name="displayPic" label="Upload display picture" onChange={this.fileHandler} accept="image/*" required />
             <Button type="submit" >Submit</Button>
           </AvForm>
         </CardBody>
@@ -138,17 +147,7 @@ class SignUp extends React.Component {
   }
 }
 
-const mapStateToProps = (state) => {
-  const { userType } = state.app;
-  return { userType };
-}
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-    signUpSuccessDispatch: (payload) => { dispatch(onSignUpSuccess(payload)) },
-    signUpFailureDispatch: () => { dispatch(onSignUpFailure()) }
-  }
-}
-
-
-export default connect(mapStateToProps, mapDispatchToProps)(SignUp);
+export default compose(
+  graphql(signUpMutation, { name: "signUpMutation" })
+)(SignUp);

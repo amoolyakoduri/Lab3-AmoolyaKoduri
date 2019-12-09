@@ -1,6 +1,4 @@
 import React from 'react';
-import { onAddToCartSuccess } from './../actions/actions';
-import { connect } from 'react-redux';
 import ItemDetails from './ItemDetails';
 import { baseUrl} from './../config/urlConfig'
 
@@ -25,7 +23,6 @@ class SectionView extends React.Component {
             price: price,
             name: name
         }
-        this.props.addToCartSuccessDispatch(payload);
         this.setState(prevState => ({
             modal: !prevState.modal,
             quantity: 1
@@ -54,10 +51,4 @@ class SectionView extends React.Component {
     }
 }
 
-const mapDispatchToProps = (dispatch) => {
-    return {
-        addToCartSuccessDispatch: (payload) => { dispatch(onAddToCartSuccess(payload)) }
-    }
-}
-
-export default connect(null, mapDispatchToProps)(SectionView);
+export default SectionView;

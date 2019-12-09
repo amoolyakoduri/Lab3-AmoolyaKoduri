@@ -1,9 +1,7 @@
 import React from 'react';
 import { Button } from 'reactstrap';
 import './../css/Filters.css'
-import { connect } from 'react-redux';
 import { AvForm, AvField } from 'availity-reactstrap-validation';
-import { onSearchFailure, onSearchSuccess } from './../actions/actions';
 import isBuyer from './isBuyer';
 import loginCheck from './LoginCheck'
 import ls from 'local-storage';
@@ -53,9 +51,7 @@ class Filters extends React.Component {
         return response.json();
       }).then((myJson) => {
         if (myJson.success == false) {
-          this.props.getSearchFailureDispatch();
         } else {
-          this.props.getSearchSuccessDispatch(myJson.payload);
         }
       })
     }
@@ -84,11 +80,5 @@ class Filters extends React.Component {
 }
 
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-    getSearchSuccessDispatch: (payload) => { dispatch(onSearchSuccess(payload)) },
-    getSearchFailureDispatch: () => { dispatch(onSearchFailure()) }
-  }
-}
 
-export default connect(null, mapDispatchToProps)(loginCheck(isBuyer(Filters)));
+export default loginCheck(isBuyer(Filters));

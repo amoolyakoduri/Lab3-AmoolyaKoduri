@@ -1,7 +1,5 @@
 import React from 'react';
 import { Table, Button } from 'reactstrap';
-import { onCurrentOrderSuccess } from './../actions/actions';
-import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 
 class OrderItems extends React.Component {
@@ -11,7 +9,6 @@ class OrderItems extends React.Component {
     }
 
     goToChat = (details) => {
-        this.props.getCurrentOrderSuccessDispatch(details);
         this.props.history.push({
             pathname: '/chat',
         })
@@ -52,10 +49,4 @@ class OrderItems extends React.Component {
     }
 }
 
-const mapDispatchToProps = (dispatch) => {
-    return {
-        getCurrentOrderSuccessDispatch: (payload) => { dispatch(onCurrentOrderSuccess(payload)) }
-    }
-}
-
-export default connect(null, mapDispatchToProps)(withRouter(OrderItems));
+export default withRouter(OrderItems);

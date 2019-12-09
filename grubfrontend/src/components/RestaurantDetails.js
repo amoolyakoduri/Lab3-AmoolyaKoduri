@@ -1,7 +1,5 @@
 import React from 'react';
 import { Button, Input } from 'reactstrap';
-import { connect } from 'react-redux';
-import { onUpdateRestDetailsSuccess, onUpdateRestDetailsFailure } from './../actions/actions';
 import { AvForm, AvField } from 'availity-reactstrap-validation';
 import ls from 'local-storage';
 import { baseUrl } from './../config/urlConfig'
@@ -37,9 +35,7 @@ class RestaurantDetails extends React.Component {
             }).then((myJson) => {
                 console.log("myJson : ", myJson);
                 if (myJson.payload == null) {
-                    this.props.updateRestDetailsFailureDispatch();
                 } else {
-                    this.props.updateRestDetailsSuccessDispatch(this.props.restDetails);
                 }
             })
     }
@@ -73,16 +69,5 @@ class RestaurantDetails extends React.Component {
     }
 }
 
-const mapStateToProps = (state) => {
-    const { restDetails } = state;
-    return { restDetails };
-}
 
-const mapDispatchToProps = (dispatch) => {
-    return {
-        updateRestDetailsSuccessDispatch: (payload) => { dispatch(onUpdateRestDetailsSuccess(payload)) },
-        updateRestDetailsFailureDispatch: () => { dispatch(onUpdateRestDetailsFailure()) }
-    }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(RestaurantDetails);
+export default RestaurantDetails;

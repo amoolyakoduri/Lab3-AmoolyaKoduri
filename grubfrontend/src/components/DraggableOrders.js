@@ -1,7 +1,6 @@
 import React, { useState, useCallback } from 'react'
 import Card from './DraggableCard'
 import update from 'immutability-helper'
-import { connect } from 'react-redux'
 import isBuyer from './isBuyer';
 import loginCheck from './LoginCheck'
 
@@ -44,8 +43,4 @@ const Container = (props) => {
   }
 }
 
-const mapStateToProps = (state) => {
-  const { upcomingOrders } = state.app;
-  return { upcomingOrders };
-}
-export default connect(mapStateToProps)(loginCheck(isBuyer(Container)));
+export default loginCheck(isBuyer(Container));

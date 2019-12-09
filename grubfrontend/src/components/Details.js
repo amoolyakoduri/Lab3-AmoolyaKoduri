@@ -1,7 +1,5 @@
 import React from 'react';
-import { connect } from 'react-redux';
 import { Button } from 'reactstrap';
-import { onUpdateDetailsSuccess, onUpdateDetailsFailure } from '../actions/actions';
 import { AvForm, AvField } from 'availity-reactstrap-validation';
 import ls from 'local-storage';
 import isBuyer from './isBuyer';
@@ -53,8 +51,7 @@ class Details extends React.Component {
                     this.setState({
                         error1: myJson.message
                     })
-                } else
-                    this.props.updateDetailsSuccessDispatch(this.state.app);
+                } else{}
             }
             )
     }
@@ -130,16 +127,5 @@ class Details extends React.Component {
     }
 }
 
-const mapStateToProps = (state) => {
-    const { app } = state;
-    return { app };
-}
 
-const mapDispatchToProps = (dispatch) => {
-    return {
-        updateDetailsSuccessDispatch: (payload) => { console.log("pl :", payload); dispatch(onUpdateDetailsSuccess(payload)) },
-        updateDetailsFailureDispatch: () => { dispatch(onUpdateDetailsFailure()) }
-    }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(loginCheck(isBuyer(Details)));
+export default loginCheck(isBuyer(Details));

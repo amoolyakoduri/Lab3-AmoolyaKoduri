@@ -2,6 +2,7 @@ const userSchema = require('./../models/users').User;
 
 module.exports.getUserDetails = (payload) => {
     return new Promise(function (resolve, reject) {
+        console.log(JSON.stringify(payload));
         userSchema.find({
             emailId: payload.email
         }, function (err, results) {
@@ -9,7 +10,8 @@ module.exports.getUserDetails = (payload) => {
                 console.log("error in getUserDetails");
                 reject("error");
             } else {
-                resolve(results);
+                console.log(results);
+                resolve(results[0].userDetails);
             }
         })
     })
@@ -17,18 +19,21 @@ module.exports.getUserDetails = (payload) => {
 
 module.exports.updateDetails = (payload) => {
     return new Promise(function (resolve, reject) {
-        const lastName = payload.userDetails.lastName;
-        const address = payload.userDetails.address;
-        const phone = payload.userDetails.phone;
-        userSchema.update({ "emailId": payload.email }, {
+        const firstName = payload.firstName;
+        const lastName = payload.lastName;
+        const address = payload.address;
+        const phone = payload.phone;
+        userSchema.update({ "emailId": payload.emailId }, {
             "userDetails.lastName": lastName,
             "userDetails.address": address,
-            "userDetails.phone": phone
-        }, function (error, results) {
+            "userDetails.phone": phone,
+            "userDetails.firstName" : firstName
+        }, {new : true}, function (error, results) {
             if (error) {
                 console.log("Error in updateDetails ");
                 reject(error);
             } else {
+                console.log(results)
                 resolve(results);
             }
         })
