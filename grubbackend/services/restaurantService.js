@@ -123,7 +123,7 @@ module.exports.addSection = (payload) => {
                     console.log(err.message);
                     reject(err);
                 } else {
-                    console.log("Section added");
+                    console.log("Section added ",results);
                     resolve(results);
                 }
             }
@@ -185,6 +185,33 @@ module.exports.getRestDetailsByOwnerEmail = (payload) => {
 module.exports.getRestDetailsByRestName = (payload) => {
     return new Promise(function (resolve, reject) {
         restSchema.find({ name: payload.restName }, function (err, results) {
+            if (err) {
+                console.log("error in getRestDetails");
+                reject(err);
+            } else {
+                console.log(results[0]);
+                resolve(results[0]);
+            }
+        })
+    })
+}
+
+module.exports.getRestDetailsByRestId = (payload) => {
+    return new Promise(function (resolve, reject) {
+        restSchema.find({ name: payload.restId }, function (err, results) {
+            if (err) {
+                console.log("error in getRestDetails");
+                reject(err);
+            } else {
+                resolve(results[0]);
+            }
+        })
+    })
+}
+
+module.exports.getRestSectionsByRestId = (payload) => {
+    return new Promise(function (resolve, reject) {
+        restSchema.find({ name: payload.restId }, function (err, results) {
             if (err) {
                 console.log("error in getRestDetails");
                 reject(err);

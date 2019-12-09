@@ -51,7 +51,7 @@ module.exports.createUser = (payload) => {
                 reject(err);
             } else {
                 console.log("user created! ", results);
-                resolve(results);
+                resolve(results.userDetails);
             }
         })
     })
